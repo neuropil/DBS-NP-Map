@@ -53,6 +53,19 @@ for iii = 1:size(testIMS,3)
         blobDims{iii}(1:lenCords,3) = iii;
         
         regDat = regionprops(imbinarize(tmpIM8),'Centroid');
+        
+        if size(regDat,1) > 1
+            regMean = zeros(size(regDat,1),2);
+            for ri = 1:size(regDat,1)
+                regMean(ri,1) = regDat(ri).Centroid(1);
+                regMean(ri,2) = regDat(ri).Centroid(2);
+            end
+            
+            regMeans = mean(regMean);
+            regDat = struct;
+            regDat.Centroid(1) = regMeans(1);
+            regDat.Centroid(2) = regMeans(2);
+        end
 
         centroidS(iii,1:2) = regDat.Centroid;
         centroidS(iii,3) = iii;
@@ -60,7 +73,7 @@ for iii = 1:size(testIMS,3)
         
         [ eqDia ] = getREgionDims(xyCords(:,2), xyCords(:,1));
         
-        [xunit, yunit] = circleJAT(regDat.Centroid(1),regDat.Centroid(2),eqDia - 2 , numPts);
+        [xunit, yunit] = SpecifyCircle_01(regDat.Centroid(1),regDat.Centroid(2),eqDia - 2 , numPts);
         [aExunit, aEyunit] = SpecifyCircle_01(regDat.Centroid(1),regDat.Centroid(2), actELEDIM , numPts);
         
         diameterS(iii,1) = eqDia - 2;
@@ -103,7 +116,46 @@ centroidSM(nanIND,4) = smCenZs;
 
 %% Compute interpolation
 
+
+
 intSMCenX = linspace(min(orgCenX),max(orgCenX),numel(orgCenX)*3);
+
+if sum(ismember(intSMCenX,orgCenX)) ~= 0
+    intSMCenX(ismember(intSMCenX,orgCenX)) = intSMCenX(ismember(intSMCenX,orgCenX)) + 0.05;
+end
+
+if sum(ismember(intSMCenX,smCenZ)) ~= 0
+    intSMCenX(ismember(intSMCenX,smCenZ)) = intSMCenX(ismember(intSMCenX,smCenZ)) + 0.05;
+end
+
+if length(smCenZ) ~= length(unique(smCenZ))
+    tbl = tabulate(smCenZ);
+    toAdj = tbl(tbl(:,2) > 1,1);
+    for ai = 1:length(toAdj)
+        
+        indi = ismember(smCenZ,toAdj(ai));
+        
+        randAdd = rand(sum(indi),1);
+        
+        smCenZ(indi) = smCenZ(indi) + randAdd;
+    end
+    
+end
+
+if length(orgCenX) ~= length(unique(orgCenX))
+    tbl = tabulate(orgCenX);
+    toAdj = tbl(tbl(:,2) > 1,1);
+    for ai = 1:length(toAdj)
+        
+        indi = ismember(orgCenX,toAdj(ai));
+        
+        randAdd = rand(sum(indi),1);
+        
+        orgCenX(indi) = orgCenX(indi) + randAdd;
+    end
+    
+end
+
 intSMCenY = interp1(orgCenX,smCenY,intSMCenX,'linear','extrap');
 intSMCenZ = interp1(orgCenX,smCenZ,intSMCenX,'linear','extrap');
 intSMCenZs = interp1(orgCenX,smCenZs,intSMCenX,'linear','extrap');
@@ -281,7 +333,25 @@ end
 
 
 
+function [ eQdiameter ] = getREgionDims(x_vec, y_vec)
+%UNTITLED3 Summary of this function goes here
+%   Detailed explanation goes here
 
+
+minX = min(x_vec);
+maxX = max(x_vec);
+
+Xdist = maxX - minX;
+
+minY = min(y_vec);
+maxY = max(y_vec);
+
+Ydist = maxY - minY;
+
+eQdiameter = mean([Xdist , Ydist]);
+
+
+end
 
 
 
