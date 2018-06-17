@@ -492,7 +492,7 @@ handles.PM_mripath = [defaultLoc , '\'];
 handles.step2.ForegroundColor = [0 0 0];
 handles.pmniText.String = 'c260_MNIbrain.nii.gz';
 
-handles.PN_MRI = 'c260_NATbrain.nii';
+handles.PN_MRI = 'c260_brain.nii';
 handles.PN_mripath = [defaultLoc , '\'];
 handles.step3.ForegroundColor = [0 0 0];
 handles.pNatText.String = 'c260_NATbrain.nii';
