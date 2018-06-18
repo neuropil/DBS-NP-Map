@@ -5,9 +5,9 @@
 
 close all
 
-ele_nii = 'SamplePostOP-Rlead.nii.gz';
-mr_nii = 'SamplePostOpBrain.nii';
-neuroDAT = 'SampleFiringRate.csv';
+ele_nii = 'c260_NATele.nii.gz';
+mr_nii = 'c260_brain.nii';
+neuroDAT = 'neurodata.csv';
 coronalSlice = 260;
 sagittalSlice = [];
 axialSlice = [];
