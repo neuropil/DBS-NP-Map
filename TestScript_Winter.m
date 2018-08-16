@@ -15,7 +15,7 @@ dataColor = 0;
 dataSize = 0;
 border = 1;
 
-DBS_Align_SpikeParam_05(ele_nii, mr_nii ,...
+DisplayEphys2DBS(ele_nii, mr_nii ,...
     coronalSlice, sagittalSlice , axialSlice , dataColor, dataSize , border , neuroDAT)
 
 %%
@@ -23,7 +23,7 @@ DBS_Align_SpikeParam_05(ele_nii, mr_nii ,...
 dataColor = 1;
 border = 0;
 
-DBS_Align_SpikeParam_05(ele_nii, mr_nii ,...
+DisplayEphys2DBS(ele_nii, mr_nii ,...
     coronalSlice, sagittalSlice , axialSlice , dataColor, dataSize , border , neuroDAT)
 
 
@@ -33,5 +33,14 @@ dataColor = 1;
 border = 1;
 dataSize = 1;
 
-DBS_Align_SpikeParam_05(ele_nii, mr_nii ,...
+DisplayEphys2DBS(ele_nii, mr_nii ,...
     coronalSlice, sagittalSlice , axialSlice , dataColor, dataSize , border , neuroDAT)
+
+%%
+
+
+
+
+
+
+

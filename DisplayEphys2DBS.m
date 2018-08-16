@@ -1,46 +1,77 @@
-function [x,y,z,sz,col] = getNeuroGUIparams(neuroDat, extrPolyOutput, solidCol, sizeMag, Sthick)
-% GETNEUROGUIPARAMS 
-% 
-% Purpose:
-%   Generates the SIZE and COLOR parameters for the X,Y,Z coordinates for
-%   visual display - used in Matlab SCATTER
-%
-% Inputs (required):
-%   'neuroDat' = Matlab Table array with two variables: depth from target,
-%              orientation in microelectrode holder (e.g., a = anterior, c = center).
-%   'extrPolyOutput' = output struct from 'ExtractDBSPolygon'
-%   'solidCol' = Logical input to determine whether a solid or gradient
-%                color is used: 1 = yes, 0 = no
-%   'sizeMg' = Logical input to determine if size is used to differeniate
-%              the ephys parameter: 1 = yes, 0 = no
-%   'Sthick' = slice thickness of MRI in mm (derived from nii)
-% 
-% Outputs 
-%    'x' = X cooridantes for displaying data
-%    'y' = Y coordinates for displaying data
-%    'z' = Z coordinates for displaying data
-%    'sz' = SIZE to use for displaying data 
-%    'col' = COLOR map/matrix to use for displaying data
-%
-% Example:
-% *Using NIFTITools to read .nii
-% >> ele_nii = load_nii('RstnElectrodeTrace.nii');
-% >> eleDiamMM = 1.27;
-% >> numPtsCircle = 80;
-% >> extrPolyOutput = ExtractDBSPolygon(ele_nii, eleDiamMM, numPtsCircle);
-% >> neuroDat = readtable('ephysDATA.csv');
-% >> solidCol = 1;
-% >> sizeMag = 0;
-% >>[x,y,z,sz,col] = getNeuroGUIparams(neuroDat, extrPolyOutput, solidCol, sizeMag)
-%
-% Last edit 8/14/2018
+function [] = DisplayEphys2DBS(ele_nii, mr_nii ,...
+    sliceCnum, sliceSnum , sliceAnum , solidCol , sizeMag , bubBorder, neuroDATcsv)
 
+% PLOT GRAY BEST FIT LINE
+% PLOT DBS CONTACTS
+% DBS_Align_SpikeParam_01
+% OLD Plot_MW_DBSLinearBubble_v1
+
+figure;
+[ output_args ] = ExtractDBSPolygon(ele_nii, 1.3 , 80);
+
+mriLoad = load_nii(mr_nii); % NIFTI TOOLS
+
+[brainIm] = Process_MRI(mriLoad);
+
+[Xsl , Ysl , Zsl] = size(brainIm);
+
+% sliceNum = 279;
+% sliceO = 'S';
+hold on
+if isnan(sliceCnum)
+    sliceCu = round(Xsl/2);
+else
+    sliceCu = sliceCnum;
+end
+c = slice(brainIm,sliceCu,[],[]);
+squzDataC = squeeze(double(brainIm(:,sliceCu,:)));
+set(c, 'alphadata', squzDataC, 'facealpha','interp');alim([0 0.5]);
+
+if isnan(sliceSnum)
+    sliceSu = round(Ysl/2);
+else
+    sliceSu = sliceSnum;
+end
+s = slice(brainIm,[],sliceSu,[]);
+squzDataS = squeeze(double(brainIm(sliceSu,:,:)));
+set(s, 'alphadata', squzDataS, 'facealpha','interp');alim([0 0.5]);
+
+if isnan(sliceAnum)
+    sliceAu = round(Zsl/2);
+else
+    sliceAu = sliceAnum;
+end
+a = slice(brainIm,[],[],sliceAu);
+squzDataA = squeeze(double(brainIm(:,:,sliceAu)));
+set(a, 'alphadata', squzDataA, 'facealpha','interp');alim([0 0.5]);
+
+shading('interp')
+colormap('bone')
+
+hold on
+
+Zticks = get(gca,'ZTick');
+sliceThick = mriLoad.hdr.dime.pixdim(4);
+ZticksSlice = Zticks*sliceThick;
+z2cell = num2cell(ZticksSlice);
+z2str = cellfun(@(x) num2str(x), z2cell, 'UniformOutput', false);
+zticklabels(z2str)
+
+hold on
+
+Plot3D_EleBoundary( output_args );
+
+
+%% Get Neuron Data
+neuroDat = readtable(neuroDATcsv);
+
+%%
 [Xc, Yc, Zc, idC,...
     Xa, Ya, Za, idA, Xp,...
     Yp, Zp, idP, Xm, Ym,...
     Zm, idM, Xl, Yl, Zl,...
     idL, featureOut] = DeriveXYZ_NEUROverlay( neuroDat ,...
-    extrPolyOutput , Sthick);
+    output_args , mriLoad.hdr.dime.pixdim(4));
 
 %% Compute Feature coordinates
 
@@ -73,6 +104,8 @@ Xl = Xl(lNan);
 Yl = Yl(lNan);
 Zl = Zl(lNan);
 alll = idL(lNan);
+
+%%
 
 if ~solidCol
     
@@ -114,6 +147,8 @@ allFRSize = zeros(length(featureOut),1);
 for fralli = 1:length(featureOut)
     allFRSize(fralli) = allFRSizeSpace(binFRall(fralli));
 end
+
+% Figure Setup
 
 [~,sortOrCZ] = sort(Zc);
 [~,sortOrAZ] = sort(Za);
@@ -177,32 +212,80 @@ else
 
 end
 
-x.C = sXc;
-x.A = sXa;
-x.P = sXp;
-x.M = sXm;
-x.L = sXl;
-y.C = sYc;
-y.A = sYa;
-y.P = sYp;
-y.M = sYm;
-y.L = sYl;
-z.C = sZc;
-z.A = sZa;
-z.P = sZp;
-z.M = sZm;
-z.L = sZl;
-sz.C = cSizeFR2;
-sz.A = aSizeFR2;
-sz.P = pSizeFR2;
-sz.M = mSizeFR2;
-sz.L = lSizeFR2;
-col.C = colormapC2;
-col.A = colormapA2;
-col.P = colormapP2;
-col.M = colormapM2;
-col.L = colormapL2;
+hold on
+sC = scatter3(sXc , sYc , sZc, cSizeFR2, colormapC2, 'filled');
+sA = scatter3(sXa , sYa , sZa, aSizeFR2, colormapA2, 'filled');
+sP = scatter3(sXp , sYp , sZp, pSizeFR2, colormapP2, 'filled');
+sM = scatter3(sXm , sYm , sZm, mSizeFR2, colormapM2, 'filled');
+sL = scatter3(sXl , sYl , sZl, lSizeFR2, colormapL2, 'filled');
+
+grid off
+set(gca,'XTickLabel',[])
+set(gca,'YTickLabel',[])
+set(gca,'ZTickLabel',[])
+set(gca,'XTick',[])
+set(gca,'YTick',[])
+set(gca,'ZTick',[])
+set(gca,'View', [-116.0000  22.0000])
+set(gca,'Color','none')
+
+if bubBorder
+    
+    sC.MarkerEdgeColor = 'k';
+    sA.MarkerEdgeColor = 'k';
+    sP.MarkerEdgeColor = 'k';
+    sM.MarkerEdgeColor = 'k';
+    sL.MarkerEdgeColor = 'k';
+    
+end
+
 
 
 end
+
+function [ mriOUT] = Process_MRI(MRI)
+% PROCESS_MRI 
+% 
+% Purpose:
+%   Converts the data type of MRI to 'single'
+%
+% Inputs (required):
+%
+%   MRI = 3D matrix represented the MRI data
+% 
+% Outputs 
+%   mriOUT = a 3D matrix of similar dimensions to input matrix, however
+%   values are stored as 'single'
+%
+% Example:
+% 
+% *Using NIFTITools to read .nii
+% >> 
+
+mriOUT = zeros(size(MRI.img),'single');
+
+for mi = 1:size(mriOUT,3)
+    
+    mriIm = single(MRI.img(:,:,mi));
+    mriIm = mriIm/(max(max(mriIm)));
+    mriOUT(:,:,mi) = mriIm;
+    
+end
+
+
+
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
 

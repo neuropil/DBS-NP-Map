@@ -1,6 +1,25 @@
-function [circleContainer] = Plot3D_ElecBound_01_GUI( eleStruct )
-
-% OLD plot3DboundaryElec
+function [] = Plot3D_EleBoundary( eleStruct )
+% PLOT3D_ELECBOUNDARY
+% 
+% Purpose:
+%   Converts the data type of MRI to 'single'
+%
+% Inputs (required):
+%   eleStruct = output struct from 'ExtractDBSPolygon'
+% 
+% Outputs 
+%    A plot is generated as an output
+%
+% Example:
+% *Using NIFTITools to read .nii
+% >> ele_nii = load_nii('RstnElectrodeTrace.nii');
+% >> eleDiamMM = 1.27;
+% >> numPtsCircle = 80;
+% >> extrPolyOutput = ExtractDBSPolygon(ele_nii, eleDiamMM, numPtsCircle);
+% >> Plot3D_EleBoundary( extrPolyOutput )
+%
+%
+% Last edit 8/14/2018
 
 zINDS = cellfun(@(x) ~isempty(x), eleStruct.meanCirSMint(:,1));
 circlesAll = eleStruct.meanCirSMint(zINDS);
