@@ -7,7 +7,7 @@ close all
 
 ele_nii = 'c260_NATele.nii.gz';
 mr_nii = 'c260_brain.nii';
-neuroDAT = 'neurodata.csv';
+neuroDAT = 'SM1.csv';
 coronalSlice = 260;
 sagittalSlice = [];
 axialSlice = [];

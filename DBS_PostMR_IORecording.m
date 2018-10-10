@@ -500,7 +500,7 @@ handles.EN_path = [defaultLoc , filesep];
 handles.step5.ForegroundColor = [0 0 0];
 handles.eleNatText.String = 'c260_NATele.nii.gz';
 
-handles.ephysCSV = 'neurodata.csv';
+handles.ephysCSV = 'SM1.csv';
 handles.ephysPath = [defaultLoc , filesep];
 handles.step6.ForegroundColor = [0 0 0];
 
@@ -527,6 +527,6 @@ while checkisDir
 end
 
 addpath(genpath(dataDIR));
-handles.DataDIR = [dataDIR , '\'];
+handles.DataDIR = [dataDIR , filesep];
 
 guidata(hObject, handles);

@@ -6,7 +6,7 @@ function [ mriOUT] = Process_MRI(MRI)
 %
 % Inputs (required):
 %
-%   MRI = 3D matrix represented the MRI data
+%   MRI = 3D matrix representing the MRI data
 % 
 % Outputs 
 %   mriOUT = a 3D matrix of similar dimensions to input matrix, however

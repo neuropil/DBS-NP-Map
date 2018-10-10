@@ -1,10 +1,66 @@
 function [] = DisplayEphys2DBS(ele_nii, mr_nii ,...
     sliceCnum, sliceSnum , sliceAnum , solidCol , sizeMag , bubBorder, neuroDATcsv)
 
-% PLOT GRAY BEST FIT LINE
-% PLOT DBS CONTACTS
-% DBS_Align_SpikeParam_01
-% OLD Plot_MW_DBSLinearBubble_v1
+% DisplayEphys2DBS
+%
+% Purpose: This function will use other helper functions to generate the
+% 3D graph in which electrophysiological data are overlaid in line with the
+% DBS implant trajectory.
+% 
+% The following helper functions are called in this function
+% 1. ExtractDBSPolygon
+% 2. Process_MRI
+% 3. Plot3D_EleBoundary
+% 4. DeriveXYZ_NEUROverlay
+%
+% INPUTS
+% 
+%   'ele_nii' = 3D matrix representing the binary mask for the traced
+%               electrode: logical
+%   'mr_nii' = file name for MRI data stored as an .nii or .gz: string or
+%   character
+%
+%   'eleDiamMM' = dimension of electrode in mm: double
+%
+%   'sliceCnum' = slice index for Coronal slice: integer
+%
+%   'sliceSnum' = slice index for Sagittal slice: integer
+%
+%   'sliceAnum' = slice index for Axial slice: integer
+%
+%   'solidCol' = flag to set whether color is uniform for entire trajectory or
+%   will show a gradient based on magnitude of parameter: 1 = gradient, 0  = solid
+%   : logical
+%
+%   'sizeMag' = flag to set whether size is uniform for entire trajectory or
+%   will vary in size based on magnitude of parameter: 1 = vary size, 0 =
+%   uniform: logical
+%
+%   'bubBorder' = flag to set whether each bubble has a edge border or not
+%   : 1 = border, 0 = no border: logical
+%
+%   'neuroDATcsv' = file name for CSV file containing electrophysiological
+%   data: string or character
+%
+%
+% OUTPUTS
+% FIGURE displaying overlay
+%
+% Example:
+% ele_nii = 'c260_NATele.nii.gz';
+% mr_nii = 'c260_brain.nii';
+% neuroDAT = 'neurodata.csv';
+% coronalSlice = 260;
+% sagittalSlice = [];
+% axialSlice = [];
+% dataColor = 0;
+% dataSize = 0;
+% border = 1;
+% 
+% DisplayEphys2DBS(ele_nii, mr_nii ,...
+%     coronalSlice, sagittalSlice , axialSlice , dataColor, dataSize , border , neuroDAT)
+
+
 
 figure;
 [ output_args ] = ExtractDBSPolygon(ele_nii, 1.3 , 80);

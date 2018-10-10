@@ -1,5 +1,5 @@
 function [ output_args ] = ExtractDBSPolygon(ele_nii, eleDiamMM, numPtsCircle)
-% Convert2single 
+% EXTRACTDBSPOLYGON 
 % 
 % Purpose:
 %   Smooths and interpolates the manually traced DBS electrode
